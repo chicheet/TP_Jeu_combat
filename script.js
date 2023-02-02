@@ -1,32 +1,50 @@
 class Personnage {
-    constructor(nom, vie, attaque) {
+    constructor(nom) {
         this.nom = nom;
-        this.vie = vie;
-        this.attaque = attaque;
+        this.vie = Personnage.nombreAleatoire();
+        this.attaque = Personnage.nombreAleatoire();
+        this.defense = Personnage.nombreAleatoire();
+        this.existe = true;
     }
-
+    static nombreAleatoire() {
+        return Math.floor(Math.random() * (100 - 20 + 1) + 20);
+    }
     attaquer(cible) {
-        if (cible.vie <= 0) {
-            return;
+        console.log(`Nouvelle attaque de ${this.nom} sur ${cible.nom} !!`);
+        if (this.attaque > cible.defense) {
+            cible.vie -= 10;
+        } else if (this.attaque === cible.defense) {
+            cible.vie -= 5;
+        } else {
+            this.vie -= 5;
         }
-        cible.vie -= this.attaque;
-        console.log(`${this.nom} attaque ${cible.nom} et lui enlève ${this.attaque} points de vie.`);
-        console.log(`${cible.nom} a maintenant ${cible.vie} points de vie.`);
-        if (cible.vie <= 0) {
-            cible.vie = 0;
-            console.log(`${cible.nom} est mort !`);
+
+        if (this.vie <= 0) {
+            console.error(`Le personnage ${this.nom} est dead.`);
+            this.existe = false;
         }
+
+        if (cible.vie <= 0) {
+            console.error(`Le personnage ${cible.nom} est dead.`);
+            cible.existe = false;
+        }
+
+        this.info();
+        cible.info();
+    }
+    info() {
+        console.log(`Nom : ${this.nom} | Vie : ${this.vie} | Attaque : ${this.attaque} | Defense : ${this.defense}`);
     }
 
-    static creationPersonnage(nom, sante, force) {
-        return new Personnage(nom, sante, force);
+    static creationPersonnage(nom, sante, force,defense) {
+        return new Personnage(nom, sante, force,defense);
     }
 
 }
 
 class CRS extends Personnage {
-    constructor(nom, vie, attaque) {
-        super(nom, vie, attaque);
+    constructor(nom, vie, attaque,defense) {
+        super(nom, vie, attaque,defense);
     }
 
     attaquer(cible) {
@@ -58,8 +76,8 @@ class CRS extends Personnage {
 }
 
 class GJ extends Personnage {
-    constructor(nom, vie, attaque) {
-        super(nom, vie, attaque);
+    constructor(nom, vie, attaque,defense) {
+        super(nom, vie, attaque,defense);
     }
 
     attaquer(cible) {
@@ -93,8 +111,8 @@ const giletsJaunes = [];
 const crs = [];
 
 for (let i = 1; i <= 8; i++) {
-    giletsJaunes.push(new GJ(`GiletJaune ${i}`, 100, 20));
-    crs.push(new CRS(`CRS ${i}`, 150, 15));
+    giletsJaunes.push(new GJ(`GiletJaune ${i}`));
+    crs.push(new CRS(`CRS ${i}`));
 }
 
 while (giletsJaunes.some(giletJaune => giletJaune.vie > 0) && crs.some(cr => cr.vie > 0)) {
