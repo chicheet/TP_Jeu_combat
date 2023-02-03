@@ -149,25 +149,34 @@ class Init {
 
 class Match {
     constructor(giletsJaunes, crs) {
+        if (giletsJaunes.length % 2 !== 0 || crs.length % 2 !== 0) {
+            console.error("Le nombre de joueurs doit être pair");
+            return;
+        }
         this.giletsJaunes = giletsJaunes;
         this.crs = crs;
         this.round = 0;
         this.winner = null;
+        this.nextType = "crs";
     }
 
     start() {
         while (this.giletsJaunes.some(giletJaune => giletJaune.vie > 0)
         && this.crs.some(cr => cr.vie > 0)) {
             this.round++;
-            const randomGiletJaune = this.giletsJaunes[Math.floor(Math.random() * this.giletsJaunes.length)];
-            const randomCRS = this.crs[Math.floor(Math.random() * this.crs.length)];
-
-            if (randomGiletJaune.vie > 0) {
-                randomGiletJaune.attaquer(randomCRS);
+            let randomPersonnage, randomAdversaire;
+            if (this.nextType === "giletsJaunes") {
+                randomPersonnage = this.giletsJaunes[Math.floor(Math.random() * this.giletsJaunes.length)];
+                randomAdversaire = this.crs[Math.floor(Math.random() * this.crs.length)];
+                this.nextType = "crs";
+            } else {
+                randomPersonnage = this.crs[Math.floor(Math.random() * this.crs.length)];
+                randomAdversaire = this.giletsJaunes[Math.floor(Math.random() * this.giletsJaunes.length)];
+                this.nextType = "giletsJaunes";
             }
 
-            if (randomCRS.vie > 0) {
-                randomCRS.attaquer(randomGiletJaune);
+            if (randomPersonnage.vie > 0) {
+                randomPersonnage.attaquer(randomAdversaire);
             }
         }
 
