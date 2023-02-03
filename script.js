@@ -124,10 +124,14 @@ class Init {
             let nom = prompt("Entrez le nom du joueur:");
             let type = prompt("Entrez le type de joueur (GJ ou CRS):");
 
-            if (type === "GJ") {
+            if (joueurs.some(joueur => joueur.nom === nom)) {
+                alert(`Le nom ${nom} est déjà utilisé. Veuillez entrer un autre nom.`);
+            } else if (type === "GJ") {
                 joueurs.push(new GJ(nom));
             } else if (type === "CRS") {
                 joueurs.push(new CRS(nom));
+            } else {
+                alert("Type de joueur incorrect. Veuillez entrer 'GJ' ou 'CRS'.");
             }
             ajouterJoueur = confirm("Voulez-vous ajouter un autre joueur?");
         }
@@ -147,11 +151,14 @@ class Match {
     constructor(giletsJaunes, crs) {
         this.giletsJaunes = giletsJaunes;
         this.crs = crs;
+        this.round = 0;
+        this.winner = null;
     }
 
     start() {
         while (this.giletsJaunes.some(giletJaune => giletJaune.vie > 0)
         && this.crs.some(cr => cr.vie > 0)) {
+            this.round++;
             const randomGiletJaune = this.giletsJaunes[Math.floor(Math.random() * this.giletsJaunes.length)];
             const randomCRS = this.crs[Math.floor(Math.random() * this.crs.length)];
 
@@ -165,12 +172,20 @@ class Match {
         }
 
         if (this.giletsJaunes.every(giletJaune => giletJaune.vie <= 0)) {
-            console.log("Les CRS ont gagné !");
+            console.log(`Les CRS ont gagné après ${this.round} tours !`);
+            this.winner = this.crs.find(cr => cr.vie > 0);
         } else if (this.crs.every(cr => cr.vie <= 0)) {
-            console.log("Les Gilets Jaunes ont gagné !");
+            console.log(`Les Gilets Jaunes ont gagné après ${this.round} tours !`);
+            this.winner = this.giletsJaunes.find(giletJaune => giletJaune.vie > 0);
         }
+
+        console.log("Information du vainqueur:");
+        console.log(`Nom: ${this.winner.nom}`);
+        console.log(`Type: ${this.winner.type}`);
+        console.log(`Vie: ${this.winner.vie}`);
     }
 }
+
 
 let joueurs = Init.instancierJoueurs();
 Init.lancerMatch(joueurs);
