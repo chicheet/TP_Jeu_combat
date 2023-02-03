@@ -50,6 +50,7 @@ class Personnage {
         }
     }
 }
+
 class CRS extends Personnage {
     constructor(nom) {
         super(nom);
@@ -82,9 +83,10 @@ class CRS extends Personnage {
         console.log(`${cible.nom} a maintenant ${cible.vie} points de vie.`);
     }
 }
+
 class GJ extends Personnage {
-    constructor(nom, vie, attaque,defense) {
-        super(nom, vie, attaque,defense);
+    constructor(nom) {
+        super(nom);
     }
 
     attaquer(cible) {
@@ -106,12 +108,42 @@ class GJ extends Personnage {
         cible.vie -= 5;
         console.log(`${this.nom} utilise la technique de caillassage et inflige 5 points de dégâts à ${cible.nom}!`);
     }
+
     mouvementDeFoule(cible) {
         cible.vie -= 15;
         console.log(`${this.nom} utilise la technique de mouvement de foule et inflige 15 points de dégâts à ${cible.nom}!`);
     }
 }
-    class Match {
+
+class Init {
+
+    static instancierJoueurs() {
+        let joueurs = [];
+        let ajouterJoueur = true;
+        while (ajouterJoueur) {
+            let nom = prompt("Entrez le nom du joueur:");
+            let type = prompt("Entrez le type de joueur (GJ ou CRS):");
+
+            if (type === "GJ") {
+                joueurs.push(new GJ(nom));
+            } else if (type === "CRS") {
+                joueurs.push(new CRS(nom));
+            }
+            ajouterJoueur = confirm("Voulez-vous ajouter un autre joueur?");
+        }
+        console.log(joueurs);
+        return joueurs;
+    }
+
+    static lancerMatch(joueurs) {
+        const giletsJaunes = joueurs.filter(joueur => joueur instanceof GJ);
+        const crs = joueurs.filter(joueur => joueur instanceof CRS);
+        let match = new Match(giletsJaunes,crs);
+        match.start();
+    }
+}
+
+class Match {
     constructor(giletsJaunes, crs) {
         this.giletsJaunes = giletsJaunes;
         this.crs = crs;
@@ -140,5 +172,5 @@ class GJ extends Personnage {
     }
 }
 
-const match = new Match(giletsJaunes, crs);
-match.start();
+let joueurs = Init.instancierJoueurs();
+Init.lancerMatch(joueurs);
